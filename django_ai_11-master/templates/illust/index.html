@@ -1,0 +1,176 @@
+{% load static %}
+{% load param_change %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>PS,AI共有</title>
+    <script src="{% static 'illust/js/script.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'illust/css/style.css' %}">
+</head>
+
+<body>
+    <header>
+        <div class="header_frame"><a class="header_content" href="?category=image/vnd.adobe.photoshop">Photoshop</a></div>
+        <div class="header_frame"><a class="header_content" href="?category=application/pdf"          >PDF</a></div>
+        <div class="header_frame"><a class="header_content" href="?category=application/postscript"   >Illustrator</a></div>
+        <div class="header_frame">
+            <form action="" method="GET">
+                <input type="text" name="search" placeholder="ここにキーワードを入れる" value="{{ request.GET.search }}">
+                <input type="submit" value="検索">
+            </form>
+        </div>
+    </header>
+
+    <div class="link_area">
+        <a class="link_button" href="{% url 'illust:index' %}">トップページ</a>
+        <a class="link_button" href="{% url 'illust:upload' %}">アップロード</a>
+        {% if request.user.is_authenticated %}
+        <a class="link_button" href="{% url 'account_logout' %}">ログアウト</a>
+        {% else %}
+        <a class="link_button" href="{% url 'account_login' %}">ログイン</a>
+        {% endif %}
+    </div>
+
+
+    {% if request.GET.search or request.GET.category %}
+
+        {% if request.GET.search %}
+        <div style="color:white;">{{ request.GET.search }}で検索しました</div>
+        {% endif %}
+        
+        <div class="row py-2">
+            {% for design in designs %}
+            <a class="col-sm-3 text-center" href="/media/{{ design.file }}" style="color:white;">
+                <img src="/media/{{ design.thumbnail }}" alt="サムネイル">
+                <div>{{ design.title }}</div>
+                <div>投稿者: {{ design.user.last_name }} {{ design.user.first_name }}</div>
+            </a>
+            {% endfor %}
+        </div>
+
+
+        <ul class="pagination justify-content-center">
+            {% if designs.has_previous %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' '1' %}">最初のページ</a></li>
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' designs.previous_page_number %}">前のページ</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link">最初のページ</a></li>
+            <li class="page-item"><a class="page-link">前のページ</a></li>
+            {% endif %}
+            <li class="page-item"><a class="page-link">{{ designs.number }}</a></li>
+            {% if designs.has_next %}
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' designs.next_page_number %}">次のページ</a></li>
+            <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' designs.paginator.num_pages %}">最後のページ</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link">次のページ</a></li>
+            <li class="page-item"><a class="page-link">最後のページ</a></li>
+            {% endif %}
+        </ul>
+
+
+
+
+    {% else %}
+
+        <div class="category_header">新着順</div>    
+        <div class="preview_control_area">
+            {% if designs %}
+            <div class="preview_data_area">
+                {% for design in designs %}
+                <div class="data_preview_frame">
+                    <div class="data_preview_content">
+                        <a href="/media/{{ design.file }}">
+                            <img src="/media/{{ design.thumbnail }}" alt="サムネイル">
+                            <div>{{ design.title }}</div>
+                            <div>投稿者: {{ design.user.last_name }} {{ design.user.first_name }}</div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="control_button previous_button">Prev</div>
+            <div class="control_button next_button">Next</div>
+            {% else %}
+            <div>データなし</div>
+            {% endif %}
+        </div>
+
+        <div class="category_header">PhotoShop</div>
+        <div class="preview_control_area">
+            {% if photoshops %}
+            <div class="preview_data_area">
+                {% for photoshop in photoshops %}
+                <div class="data_preview_frame">
+                    <div class="data_preview_content">
+                        <a href="/media/{{ photoshop.file }}">
+                            <img src="/media/{{ photoshop.thumbnail }}" alt="サムネイル">
+                            <div>{{ photoshop.title }}</div>
+                            <div>投稿者: {{ photoshop.user.last_name }} {{ photoshop.user.first_name }}</div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="control_button previous_button">Prev</div>
+            <div class="control_button next_button">Next</div>
+            {% else %}
+            <div>データなし</div>
+            {% endif %}
+        </div>
+
+
+        <div class="category_header">Illustrator</div>    
+        <div class="preview_control_area">
+            {% if illustrators %}
+            <div class="preview_data_area">
+                {% for illustrator in illustrators %}
+                <div class="data_preview_frame">
+                    <div class="data_preview_content">
+                        <a href="/media/{{ illustrator.file }}">
+                            <img src="/media/{{ illustrator.thumbnail }}" alt="サムネイル">
+                            <div>{{ illustrator.title }}</div>
+                            <div>投稿者: {{ illustrator.user.last_name }} {{ illustrator.user.first_name }}</div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="control_button previous_button">Prev</div>
+            <div class="control_button next_button">Next</div>
+            {% else %}
+            <div>データなし</div>
+            {% endif %}
+        </div>
+
+
+        <div class="category_header">PDF</div>    
+        <div class="preview_control_area">
+            {% if pdfs %}
+            <div class="preview_data_area">
+                {% for pdf in pdfs %}
+                <div class="data_preview_frame">
+                    <div class="data_preview_content">
+                        <a href="/media/{{ pdf.file }}">
+                            <img src="/media/{{ pdf.thumbnail }}" alt="サムネイル">
+                            <div>{{ pdf.title }}</div>
+                            <div>投稿者: {{ pdf.user.last_name }} {{ pdf.user.first_name }}</div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="control_button previous_button">Prev</div>
+            <div class="control_button next_button">Next</div>
+            {% else %}
+            <div>データなし</div>
+            {% endif %}
+        </div>
+
+        {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>簡易掲示板</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+<body>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!--
+                type属性にはinputタグのタイプを指定する。fileやtext、checkboxなど
+                name属性にはモデルのフィールド名を指定する。
+                placeholder属性にはテキストボックスに指定したい記入例を指定する。
+
+                HTMLの属性入力は、","で区切らない。スペースで区切る。
+            -->
+            <!--
+                <input type="file", name="content">
+                <input type="name", name="ファイル名",placeholder="ファイル名">
+            -->
+
+            <input type="file" name="content">
+            <input type="text" name="name" placeholder="ファイル名">
+
+            <input type="submit" value="送信">
+        </form>
+
+        {% for document in documents %}
+        <div>{{document.dt}}</div>
+        <div>{{document.mime}}</div>
+
+        <div>
+            <a href="{{ document.content.url }}">{{document.name}}をダウンロード</a>
+        </div>
+
+        {% endfor %}
+
+</body>
+</html>
